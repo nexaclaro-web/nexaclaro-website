@@ -827,6 +827,11 @@ body {
   min-height: 0;
 }
 
+.video-stage video:fullscreen {
+  object-fit: contain;
+  background: #000;
+}
+
 /* Video seek bar */
 .video-seeker::-webkit-slider-thumb {
   -webkit-appearance: none;

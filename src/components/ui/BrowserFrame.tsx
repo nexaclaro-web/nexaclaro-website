@@ -23,6 +23,17 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
+type VideoWithWebkitFs = HTMLVideoElement & {
+  webkitEnterFullscreen?: () => void
+  webkitDisplayingFullscreen?: boolean
+}
+
+/** iOS Safari only fullscreens <video> natively, not wrapper divs. */
+function prefersNativeVideoFullscreen() {
+  const v = document.createElement('video') as VideoWithWebkitFs
+  return typeof v.webkitEnterFullscreen === 'function'
+}
+
 function UrlBar({ url }: { url: string }) {
   const parts = url.split('.')
   if (parts.length >= 3) {
@@ -146,12 +157,27 @@ export function BrowserFrame({
   }, [videoSrc, applyTrimStart])
 
   useEffect(() => {
-    const onFs = () => {
-      setIsFullscreen(document.fullscreenElement === stageRef.current)
+    const syncFs = () => {
+      const v = videoRef.current as VideoWithWebkitFs | null
+      const native =
+        !!v?.webkitDisplayingFullscreen ||
+        document.fullscreenElement === stageRef.current ||
+        document.fullscreenElement === videoRef.current
+      setIsFullscreen(native)
     }
-    document.addEventListener('fullscreenchange', onFs)
-    return () => document.removeEventListener('fullscreenchange', onFs)
-  }, [])
+    document.addEventListener('fullscreenchange', syncFs)
+
+    const v = videoRef.current
+    if (!v) return () => document.removeEventListener('fullscreenchange', syncFs)
+
+    v.addEventListener('webkitbeginfullscreen', syncFs)
+    v.addEventListener('webkitendfullscreen', syncFs)
+    return () => {
+      document.removeEventListener('fullscreenchange', syncFs)
+      v.removeEventListener('webkitbeginfullscreen', syncFs)
+      v.removeEventListener('webkitendfullscreen', syncFs)
+    }
+  }, [videoSrc])
 
   useEffect(() => {
     if (!playOnVisible) return
@@ -288,12 +314,51 @@ export function BrowserFrame({
   }, [started, skipBy, togglePlay])
 
   const toggleFullscreen = async () => {
-    const el = stageRef.current
-    if (!el) return
-    if (document.fullscreenElement !== el) {
-      await el.requestFullscreen?.()
-    } else {
-      await document.exitFullscreen?.()
+    const video = videoRef.current as VideoWithWebkitFs | null
+    const stage = stageRef.current
+    if (!video || !stage) return
+
+    // iPhone / iPad: native video fullscreen (custom div fullscreen is ignored)
+    if (prefersNativeVideoFullscreen()) {
+      try {
+        if (video.webkitDisplayingFullscreen) return
+        if (!started) {
+          applyTrimStart(video)
+          await video.play()
+          setStarted(true)
+          setPlaying(true)
+        }
+        video.webkitEnterFullscreen?.()
+      } catch {
+        /* ignored */
+      }
+      return
+    }
+
+    // Android / desktop: Fullscreen API — video on mobile, stage on desktop (keeps our controls)
+    const useVideoTarget =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 1023px), (hover: none)').matches
+    const target: HTMLElement = useVideoTarget ? video : stage
+    const active = document.fullscreenElement
+
+    try {
+      if (active === target) {
+        await document.exitFullscreen?.()
+      } else if (!active) {
+        if (!started) {
+          applyTrimStart(video)
+          await video.play()
+          setStarted(true)
+          setPlaying(true)
+        }
+        await target.requestFullscreen?.()
+      } else {
+        await document.exitFullscreen?.()
+        await target.requestFullscreen?.()
+      }
+    } catch {
+      /* ignored */
     }
   }
 
