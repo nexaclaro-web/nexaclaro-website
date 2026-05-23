@@ -24,9 +24,13 @@ npx playwright install chromium
 
 Use `npm run build:spa` if Playwright fails on your machine and you need a quick deploy (sitemap + meta tags still work).
 
-## Deploy note
+## Deploy note (Vercel)
 
-Hosts (Cloudflare Pages, Netlify, Vercel) serve `dist/ponuda/index.html` for URL `/ponuda` automatically.
+On Vercel, use **Build Command:** `npm run build` (no Playwright install). Prerender is skipped automatically on Vercel; routing uses `vercel.json`.
+
+For static HTML per route on the server, run `npm run build` on your PC before a release, or use `npm run build:spa` on Vercel (same as auto-skip).
+
+Other hosts: prerendered `dist/ponuda/index.html` is served for `/ponuda` when you upload a full `npm run build` output from your machine.
 
 ## If prerender fails
 

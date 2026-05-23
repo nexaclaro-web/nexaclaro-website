@@ -58,6 +58,13 @@ function startPreview() {
 }
 
 async function main() {
+  // Vercel’s build image lacks Playwright’s system libs (e.g. libnspr4). SEO still works via
+  // sitemap, meta tags, JSON-LD, and vercel.json SPA fallback. Run full prerender locally if needed.
+  if (process.env.VERCEL === '1') {
+    console.log('Skipping prerender on Vercel (Playwright Chromium not available on this host).')
+    return
+  }
+
   if (!existsSync(distDir)) {
     console.error('dist/ not found. Run: npm run build')
     process.exit(1)
