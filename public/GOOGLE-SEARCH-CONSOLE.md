@@ -9,7 +9,7 @@ After deploy to **https://nexaclaro.com**:
 
 ## Already on the site
 
-- `robots.txt` + `sitemap.xml` (7 public routes)
+- `robots.txt` + `sitemap.xml` (8 public routes)
 - Per-page `<title>`, meta description, canonical
 - Open Graph + Twitter cards (link previews)
 - JSON-LD: Organization, WebSite, WebPage
