@@ -9,6 +9,7 @@
     "build:spa": "node scripts/generate-sitemap.mjs && tsc -b && vite build",
     "prerender": "node scripts/prerender.mjs",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "generate:og": "node scripts/generate-og-image.mjs",
     "preview": "vite preview",
     "capture:portfolio": "node scripts/capture-portfolio-screenshots.mjs"
   },
