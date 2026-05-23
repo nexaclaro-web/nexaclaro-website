@@ -10,10 +10,11 @@ export function buildMessagingLinks(phoneE164: string) {
 }
 
 export const CONTACT = {
-  phone: '+389 75 844 462',
-  phoneRaw: '+38975844462',
+  phone: '+389 (79) 312-438',
+  phoneRaw: '+38979312438',
   email: 'contact@nexaclaro.com',
-  ...buildMessagingLinks('+38975844462'),
+  linkedin: 'https://www.linkedin.com/company/nexaclaro',
+  ...buildMessagingLinks('+38979312438'),
 } as const
 
 export const NAV_LINKS = [

@@ -22,7 +22,7 @@ const social = [
 
   { href: `mailto:${CONTACT.email}`, icon: Mail, label: 'Е-пошта' },
 
-  { href: '#', icon: Linkedin, label: 'LinkedIn' },
+  { href: CONTACT.linkedin, icon: Linkedin, label: 'LinkedIn' },
 
 ]
 
@@ -170,11 +170,19 @@ export function Footer() {
 
 
 
-          <div className="mt-14 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between gap-4 text-xs">
+          <div className="mt-14 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs">
 
             <p>© 2026 NexaClaro. Сите права се задржани.</p>
 
-            <p>Македонија</p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-neutral-500">
+              <Link to="/privatnost" className="hover:text-white transition-colors">
+                Политика за приватност
+              </Link>
+              <span className="hidden sm:inline text-neutral-700" aria-hidden>
+                ·
+              </span>
+              <span>Прилеп, Северна Македонија</span>
+            </div>
 
           </div>
 

@@ -4,9 +4,17 @@ type Props = {
   children: React.ReactNode
   className?: string
   dark?: boolean
+  hint?: string
 }
 
-export function FormField({ label, id, children, className = '', dark = false }: Props) {
+export function FormField({
+  label,
+  id,
+  children,
+  className = '',
+  dark = false,
+  hint,
+}: Props) {
   return (
     <div className={`space-y-2 ${className}`}>
       <label
@@ -15,6 +23,11 @@ export function FormField({ label, id, children, className = '', dark = false }:
       >
         {label}
       </label>
+      {hint && (
+        <p className={`text-xs leading-relaxed -mt-1 ${dark ? 'text-neutral-600' : 'text-neutral-500'}`}>
+          {hint}
+        </p>
+      )}
       {children}
     </div>
   )

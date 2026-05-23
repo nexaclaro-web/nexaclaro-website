@@ -7,17 +7,18 @@ import { ReviewRating } from '../components/reviews/ReviewRating'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { FormField, inputClassDark, textareaClassDark } from '../components/ui/FormField'
 import { Button } from '../components/ui/Button'
-import { useFormSubmit } from '../hooks/useFormSubmit'
+import { useFormPost } from '../utils/formPost'
 import { CONTAINER, PAGE_PT, SECTION_PY } from '../lib/layout'
 
 export function Reviews() {
-  const { submit, message, status, isLoading } = useFormSubmit()
+  const { submit, message, status, isLoading } = useFormPost('NexaClaro – рецензија')
   const [rating, setRating] = useState(5)
 
   const handleReviewSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget
     const ok = await submit(e)
     if (ok) {
-      e.currentTarget.reset()
+      form.reset()
       setRating(5)
     }
   }
@@ -58,6 +59,14 @@ export function Reviews() {
             </div>
 
             <form onSubmit={handleReviewSubmit} className="review-form-card__form">
+              <input
+                type="checkbox"
+                name="botcheck"
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden"
+                aria-hidden
+              />
               <input type="hidden" name="rating" value={rating} />
 
               <div className="review-form-card__fields">
@@ -115,7 +124,9 @@ export function Reviews() {
                       className={`review-form-card__message ${
                         status === 'success'
                           ? 'review-form-card__message--success'
-                          : 'review-form-card__message--neutral'
+                          : status === 'error'
+                            ? 'review-form-card__message--error'
+                            : 'review-form-card__message--neutral'
                       }`}
                       role="status"
                     >

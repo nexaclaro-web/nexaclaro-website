@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Upload, MessageCircle, Mail, Phone } from 'lucide-react'
+import { MessageCircle, Mail, Phone } from 'lucide-react'
 import { CONTACT } from '../data/content'
 import {
   ServicePicker,
@@ -11,7 +11,7 @@ import {
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { FormField, inputClassDark, textareaClassDark } from '../components/ui/FormField'
 import { Button } from '../components/ui/Button'
-import { useFormSubmit } from '../hooks/useFormSubmit'
+import { useFormPost } from '../utils/formPost'
 import { CONTAINER, PAGE_PT, SECTION_PY } from '../lib/layout'
 
 const VALID_SERVICE_IDS = [
@@ -26,11 +26,17 @@ const VALID_SERVICE_IDS = [
   OFFER_OTHER_ID,
 ] as const
 
+/** Digits plus separators for amounts and ranges (e.g. 500 – 1000). */
+function sanitizeBudgetInput(value: string): string {
+  return value.replace(/[^\d\s.,–\-]/g, '')
+}
+
 export function RequestOffer() {
   const [searchParams] = useSearchParams()
-  const { submit, message, status, isLoading } = useFormSubmit()
+  const { submit, message, status, isLoading } = useFormPost('NexaClaro – барање за понуда')
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null)
   const [hasWebsite, setHasWebsite] = useState<string>('')
+  const [budget, setBudget] = useState('')
   const [description, setDescription] = useState('')
 
   const selectedService = getServiceById(selectedServiceId)
@@ -56,10 +62,12 @@ export function RequestOffer() {
   }, [selectedServiceId])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget
     const ok = await submit(e)
     if (ok) {
-      e.currentTarget.reset()
+      form.reset()
       setHasWebsite('')
+      setBudget('')
       setDescription(selectedService ? `Интересирам се за: ${selectedService.title}.\n\n` : '')
     }
   }
@@ -140,6 +148,15 @@ export function RequestOffer() {
                     Пополнете ги полињата — ќе ве контактираме со прашања или првична понуда.
                   </p>
                 </div>
+
+                <input
+                  type="checkbox"
+                  name="botcheck"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="hidden"
+                  aria-hidden
+                />
 
                 <input type="hidden" name="serviceId" value={selectedServiceId ?? ''} />
                 <input
@@ -224,15 +241,26 @@ export function RequestOffer() {
                   </div>
                 </fieldset>
 
-                <FormField label="Прилог (опционално)" id="offer-file" dark>
-                  <label
-                    htmlFor="offer-file"
-                    className="flex items-center justify-center gap-2 w-full py-8 rounded-xl border border-dashed border-white/15 text-neutral-500 hover:border-white/30 hover:text-neutral-300 cursor-pointer transition-colors text-sm"
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>Прикачете документ или бриф</span>
-                    <input id="offer-file" name="file" type="file" className="sr-only" />
-                  </label>
+                <FormField
+                  label="Планиран буџет за проектот (EUR)"
+                  id="offer-budget"
+                  dark
+                  hint="Наведете ја планираната сума во евра (на пр. 350 или 500 – 1000). Не е обврзувачки договор."
+                >
+                  <input
+                    id="offer-budget"
+                    name="budget"
+                    type="text"
+                    required
+                    inputMode="decimal"
+                    autoComplete="off"
+                    placeholder="на пр. 350 € или 500 – 1.000 €"
+                    className={inputClassDark}
+                    value={budget}
+                    onChange={(e) => setBudget(sanitizeBudgetInput(e.target.value))}
+                    pattern="[\d][\d\s.,–\-]*"
+                    title="Внесете само бројки (може и опсег, на пр. 500 – 1000)"
+                  />
                 </FormField>
 
                 <p className="text-xs text-neutral-600 leading-relaxed">
@@ -246,7 +274,14 @@ export function RequestOffer() {
 
                 {message && (
                   <p
-                    className={`text-sm ${status === 'success' ? 'text-emerald-400' : 'text-neutral-400'}`}
+                    className={`text-sm ${
+                      status === 'success'
+                        ? 'text-emerald-400'
+                        : status === 'error'
+                          ? 'text-amber-400'
+                          : 'text-neutral-400'
+                    }`}
+                    role="status"
                   >
                     {message}
                   </p>

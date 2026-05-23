@@ -25,12 +25,12 @@ function GeneralInfoTile({
   href: string
 }) {
   return (
-    <div className="flex items-start gap-4 min-w-0 max-sm:justify-center max-sm:text-center sm:justify-start sm:text-left">
+    <div className="flex w-full items-center gap-4 min-w-0 text-left">
       <div className="w-10 h-10 rounded-xl border border-white/10 bg-white/[0.03] flex items-center justify-center shrink-0 text-neutral-400">
         <Icon className="w-5 h-5" />
       </div>
-      <div className="min-w-0">
-        <p className="text-sm text-neutral-500">{label}</p>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm text-neutral-500 leading-snug">{label}</p>
         <a
           href={href}
           className="mt-1 block text-base font-medium text-white hover:text-neutral-300 transition-colors break-all"
@@ -65,9 +65,16 @@ export function ContactHub() {
 
       <div>
         <SectionLabel>Тим</SectionLabel>
-        <div className="grid lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
+        <div className="flex flex-col gap-3 sm:gap-4 max-lg:gap-3 lg:grid lg:grid-cols-2 lg:gap-5">
           {TEAM.map((member, i) => (
-            <TeamMemberCard key={member.email} member={member} index={i} />
+            <TeamMemberCard
+              key={member.email}
+              member={member}
+              index={i}
+              mobileOrder={
+                member.email === 'vladimir@nexaclaro.com' ? 'max-lg:order-1' : 'max-lg:order-2'
+              }
+            />
           ))}
         </div>
       </div>
@@ -80,7 +87,7 @@ export function ContactHub() {
       >
         <SectionLabel>Општи информации</SectionLabel>
         <BorderBeamBox accent="sky" innerClassName="p-5 sm:p-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-10 max-sm:max-w-sm max-sm:mx-auto w-full">
+          <div className="flex flex-col gap-4 w-full sm:grid sm:grid-cols-2 sm:gap-10">
             <GeneralInfoTile
               icon={Mail}
               label="Контакт е-пошта"

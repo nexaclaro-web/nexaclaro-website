@@ -9,9 +9,11 @@ type Props = {
   member: Member
   index: number
   accent?: BorderBeamAccent
+  /** Tailwind order classes for mobile-only reordering (desktop grid unchanged at lg+). */
+  mobileOrder?: string
 }
 
-export function TeamMemberCard({ member, index, accent }: Props) {
+export function TeamMemberCard({ member, index, accent, mobileOrder = '' }: Props) {
   const beam = accent ?? borderBeamAccent(index)
 
   return (
@@ -20,7 +22,7 @@ export function TeamMemberCard({ member, index, accent }: Props) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.08 }}
-      className="h-full"
+      className={`h-full ${mobileOrder} lg:order-none`}
     >
       <BorderBeamBox accent={beam} innerClassName="p-5 sm:p-8 lg:p-9 h-full flex flex-col" className="h-full">
         <div className="flex items-start gap-4">

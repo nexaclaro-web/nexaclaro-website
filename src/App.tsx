@@ -7,6 +7,7 @@ import { PortfolioPage } from './pages/PortfolioPage'
 import { ReviewsPage } from './pages/ReviewsPage'
 import { OfferPage } from './pages/OfferPage'
 import { ContactPage } from './pages/ContactPage'
+import { PrivacyPage } from './pages/PrivacyPage'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="recenzii" element={<ReviewsPage />} />
         <Route path="ponuda" element={<OfferPage />} />
         <Route path="kontakt" element={<ContactPage />} />
+        <Route path="privatnost" element={<PrivacyPage />} />
       </Route>
     </Routes>
   )

@@ -8,7 +8,7 @@ export type SeoRoute = {
   title: string
   description: string
   /** sitemap <changefreq> */
-  changefreq: 'weekly' | 'monthly'
+  changefreq: 'weekly' | 'monthly' | 'yearly'
   priority: string
 }
 
@@ -69,6 +69,14 @@ export const SEO_ROUTES: SeoRoute[] = [
       'Контактирајте го тимот на NexaClaro — WhatsApp, Viber, Telegram, е-пошта и телефон.',
     changefreq: 'monthly',
     priority: '0.8',
+  },
+  {
+    path: '/privatnost',
+    title: 'Политика за приватност — NexaClaro',
+    description:
+      'Како NexaClaro ги обработува личните податоци од контакт и понуда формите, Web3Forms и вашите права.',
+    changefreq: 'yearly',
+    priority: '0.3',
   },
 ]
 
